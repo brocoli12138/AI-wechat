@@ -4,6 +4,7 @@ import copy
 from typing import Dict, List, Tuple
 
 from config import Config
+from locker import Locker
 from file_manager import FileManager
 
 
@@ -12,11 +13,11 @@ class StorageManager:
         self.config = config
         self.file_manager = file_manager
         self._cache: Dict[str, Tuple[List[dict], float]] = {}
-        self._lock = threading.RLock()
+        self._locker = Locker()
         self._stop_event = threading.Event()
 
     def add_context(self, user_id: str, context: dict) -> None:
-        with self._lock:
+        with self._locker.acquire_user_lock(user_id):
             # 如果用户不存在则创建新列表
             if user_id not in self._cache:
                 self._cache[user_id] = ([], time.time())
@@ -41,7 +42,7 @@ class StorageManager:
             3. 更新用户上下文的最后访问时间
             4. 返回上下文的深拷贝,避免外部修改影响缓存
         """
-        with self._lock:
+        with self._locker.acquire_user_lock(user_id):
             # 如果用户上下文不在缓存中,从文件加载
             if user_id not in self._cache:
                 self._cache[user_id] = (self.file_manager.load_context(user_id), time.time())
@@ -62,15 +63,21 @@ class StorageManager:
         """
         while not self._stop_event.is_set():
             time.sleep(min(int(self.config.context_stay_duration)/2, 60))
-            with self._lock:
-                now = time.time()
-                expired = [
-                    uid for uid, (_, timestamp) in self._cache.items()
-                    if (now - timestamp) >= (int(self.config.context_stay_duration))
-                ]
-                for uid in expired:
-                    self.file_manager.save_context(uid, self._cache[uid][0])
-                    del self._cache[uid]
+            now = time.time()
+            # 1. 获取缓存键的快照（避免遍历时字典被修改）
+            uid_snapshot = list(self._cache.keys())
+            
+            for uid in uid_snapshot:
+                with self._locker.acquire_user_lock(uid):
+                    # 2. 二次验证：检查缓存项是否仍存在
+                    if uid not in self._cache:
+                        continue  # 可能已被其他线程删除
+                        
+                    # 3. 在锁内获取最新时间戳（防时间戳过期）
+                    _, timestamp = self._cache[uid]
+                    if (now - timestamp) >= int(self.config.context_stay_duration):
+                        self.file_manager.save_context(uid, self._cache[uid][0])
+                        del self._cache[uid]
 
     def start_eviction_daemon(self) -> None:
         thread = threading.Thread(target=self._evict_expired_contexts, daemon=True)
