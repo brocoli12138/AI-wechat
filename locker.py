@@ -10,9 +10,14 @@ class Locker:
     def acquire_user_lock(self, user_id: str) -> threading.Lock:
         """安全获取特定用户的锁"""
         # 第一次检查（无锁）
-        if user_id not in self.user_locks:
+        try:
+            return self.user_locks[user_id]
+        except KeyError:
             with self.user_locks_lock:
                 # 第二次检查（有锁）
-                if user_id not in self.user_locks:
-                    self.user_locks[user_id] = threading.Lock()
-        return self.user_locks[user_id]
+                try:
+                    return self.user_locks[user_id]
+                except KeyError:
+                    lock = threading.Lock()
+                    self.user_locks[user_id] = lock
+                    return lock
