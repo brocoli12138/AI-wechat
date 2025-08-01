@@ -3,7 +3,7 @@ import tempfile
 import shutil
 import time
 
-from config import Config
+from ..config import Config
 from context_manager import ContextManager
 def test_eviction():
     manager = ContextManager(Config())

@@ -1,7 +1,5 @@
-import threading
-from typing import Dict, List, Dict as DictType
-
-from config import Config
+from typing import Dict, List
+from ..config import Config
 from storage_manager import StorageManager
 from context_trimmer import ContextTrimmer
 from file_manager import FileManager
@@ -14,10 +12,10 @@ class ContextManager:
         self.trimmer = ContextTrimmer(config)
         self.storage.start_eviction_daemon()
 
-    def append(self, user_id: str, message: DictType) -> None:
+    def append(self, user_id: str, message: Dict) -> None:
         self.storage.add_context(user_id, message)
 
-    def get(self, user_id: str) -> List[DictType]:
+    def get(self, user_id: str) -> List[Dict]:
         full_context = self.storage.get_context(user_id)
         return self.trimmer.trim(full_context)
 

@@ -3,8 +3,8 @@ import time
 import copy
 from typing import Dict, List, Tuple
 
-from config import Config
-from locker import Locker
+from ..config import Config
+from ..locker import Locker
 from file_manager import FileManager
 
 
@@ -18,9 +18,9 @@ class StorageManager:
 
     def add_context(self, user_id: str, context: dict) -> None:
         with self._locker.acquire_user_lock(user_id):
-            # 如果用户不存在则创建新列表
+            # 如果用户不存在则尝试从硬盘加载
             if user_id not in self._cache:
-                self._cache[user_id] = ([], time.time())
+                self._cache[user_id] = (self.file_manager.load_context(user_id), time.time())
             # 获取当前上下文列表并添加新的context
             current_contexts = self._cache[user_id][0]
             current_contexts.append(context)

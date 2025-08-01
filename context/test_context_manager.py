@@ -4,7 +4,7 @@ import shutil
 import time
 from unittest.mock import MagicMock, patch
 
-from config import Config
+from ..config import Config
 from context_manager import ContextManager
 
 
