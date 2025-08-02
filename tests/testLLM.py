@@ -1,4 +1,4 @@
-from .responsor import Responsor
+from LLM.responsor import Responsor
 from config import Config
 
 config = Config()
