@@ -15,17 +15,18 @@ class Responsor:
         response = self.openai_client.chat.completions.create(
                 model=self.config.model_name,
                 messages=self.temp_context,
-                temperature=self.config.model_temperature,
-                top_p=self.config.model_top_p,
+                temperature=int(self.config.model_temperature),
+                top_p=int(self.config.model_top_p),
                 stream=False,
                 tools=self.tool_manager.get_tools())
         
         return response.choices[0].message
 
-    def send_request(self, user_id: str, new_message: Dict, history: List[Dict]) -> Dict:
+    def send_request(self, new_message: Dict | None, history: List[Dict] = []) -> Dict:
         # 将历史和新消息拼接赋值给temp_context
         self.temp_context=history
-        self.temp_context.append(new_message)
+        if new_message != None:
+            self.temp_context.append(new_message)
         # 发送一次单次请求
         res_message = self._send_single_request()
         # 检查是否是一般消息，如果是一般消息就返回，如果是工具调用，则逐个拼接响应之后再发送直到返回一般消息
@@ -35,5 +36,8 @@ class Responsor:
             self.temp_context.append(res_message)
             for item in res_message.tool_calls:
                 # 逐个执行tools，然后拼接
-                pass
+                tool_res = self.tool_manager.execute_tool(item.function.name, item.function.arguments)
+                self.temp_context.append({"role": "tool", "content": tool_res})
+            # 递归调用send_request，防止在提交tools工具之后LLM还需要调用工具。
+            return self.send_request(None, self.temp_context)
         return {"role":res_message.role, "content":res_message.content}

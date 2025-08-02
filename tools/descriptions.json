@@ -24,22 +24,22 @@
   {
     "type": "function",
     "function": {
-      "name": "search_web",
-      "description": "Search the web for information",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "query": {
-            "type": "string",
-            "description": "Search query"
-          },
-          "num_results": {
-            "type": "integer",
-            "description": "Number of results to return"
-          }
-        },
-        "required": ["query"]
-      }
+        "name": "compare",
+        "description": "Compare two number, which one is bigger",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "a": {
+                    "type": "float",
+                    "description": "A number"
+                },
+                "b": {
+                    "type": "float",
+                    "description": "A number"
+                }
+            },
+            "required": ["a", "b"]
+        }
     }
-  }
+}
 ]
