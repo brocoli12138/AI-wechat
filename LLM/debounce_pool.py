@@ -3,8 +3,8 @@ import time
 from queue import Queue
 from typing import Dict, Callable
 
-from ..config import Config
-from ..locker import Locker
+from config import Config
+from locker import Locker
 
 
 class DebouncePool:

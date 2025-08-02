@@ -1,22 +1,24 @@
-from ..config import Config
-from ..tools.tools_manager import ToolManager
+from config import Config
+from tools.tools_manager import ToolManager
 from openai import OpenAI
 from typing import List, Dict, Any
+import json
 
 class Responsor:
     def __init__(self, config: Config):
         self.config=config
-        self.tool_manager = ToolManager()
+        self.tool_manager = ToolManager(config)
         self.openai_client = OpenAI(api_key=config.openai_key,
                                     base_url=config.openai_endpoint)
         self.temp_context = []
 
     def _send_single_request(self):
+        print(self.temp_context)
         response = self.openai_client.chat.completions.create(
                 model=self.config.model_name,
                 messages=self.temp_context,
-                temperature=int(self.config.model_temperature),
-                top_p=int(self.config.model_top_p),
+                temperature=float(self.config.model_temperature),
+                top_p=float(self.config.model_top_p),
                 stream=False,
                 tools=self.tool_manager.get_tools())
         
@@ -36,8 +38,10 @@ class Responsor:
             self.temp_context.append(res_message)
             for item in res_message.tool_calls:
                 # 逐个执行tools，然后拼接
-                tool_res = self.tool_manager.execute_tool(item.function.name, item.function.arguments)
-                self.temp_context.append({"role": "tool", "content": tool_res})
+                toolname=item.function.name
+                toolargument=json.loads(item.function.arguments.strip())
+                tool_res = self.tool_manager.execute_tool(toolname, toolargument)
+                self.temp_context.append({"role": "tool", "content": tool_res,"tool_call_id": item.id})
             # 递归调用send_request，防止在提交tools工具之后LLM还需要调用工具。
             return self.send_request(None, self.temp_context)
         return {"role":res_message.role, "content":res_message.content}

@@ -1,8 +1,8 @@
 from typing import Dict, List
-from ..config import Config
-from storage_manager import StorageManager
-from context_trimmer import ContextTrimmer
-from file_manager import FileManager
+from config import Config
+from .storage_manager import StorageManager
+from .context_trimmer import ContextTrimmer
+from .file_manager import FileManager
 
 class ContextManager:
     def __init__(self, config: Config) -> None:

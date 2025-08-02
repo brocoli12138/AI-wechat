@@ -3,8 +3,8 @@ import json
 import base64
 import shutil
 from typing import List, Dict
-from ..config import Config
-from ..locker import Locker
+from config import Config
+from locker import Locker
 
 class FileManager:
     def __init__(self, config: Config) -> None:

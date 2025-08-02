@@ -1,5 +1,5 @@
 import json
-from tools_manager import ToolManager
+from .tools_manager import ToolManager
 
 def main():
 

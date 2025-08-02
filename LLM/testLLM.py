@@ -1,5 +1,5 @@
 from .responsor import Responsor
-from ..config import Config
+from config import Config
 
 config = Config()
 responsor=Responsor(config)

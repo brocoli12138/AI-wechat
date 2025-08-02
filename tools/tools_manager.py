@@ -2,6 +2,7 @@ import json
 import importlib.util
 import os
 from typing import Any, Dict, List, Union, Callable, Optional
+from config import Config
 
 class ToolManager:
     """
@@ -9,7 +10,7 @@ class ToolManager:
     支持从JSON文件加载工具描述，并执行对应的工具实现
     """
     
-    def __init__(self):
+    def __init__(self, config: Config):
         """
         初始化工具管理器
         
@@ -19,10 +20,10 @@ class ToolManager:
         """
         
         # 加载工具描述
-        self.tools_description = self._load_tools_description("descriptions.json")
+        self.tools_description = self._load_tools_description(config.tools_description)
         
         # 加载工具实现
-        self.tool_implementations = self._load_tool_implementations("implementations.py")
+        self.tool_implementations = self._load_tool_implementations(config.tools_implementation)
     
     def _load_tools_description(self, path: str) -> List[Dict]:
         """
@@ -129,14 +130,6 @@ class ToolManager:
                 import asyncio
                 result = asyncio.get_event_loop().run_until_complete(result)
             
-            return {
-                "name": tool_name,
-                "content": result,
-                "status": "success"
-            }
+            return result
         except Exception as e:
-            return {
-                "name": tool_name,
-                "content": f"Error executing tool: {str(e)}",
-                "status": "error"
-            }
+            return  f"Error executing tool: {str(e)}"

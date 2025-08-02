@@ -1,7 +1,7 @@
 import copy
 from typing import List, Dict
 
-from ..config import Config
+from config import Config
 
 class ContextTrimmer:
     def __init__(self, config: Config) -> None:

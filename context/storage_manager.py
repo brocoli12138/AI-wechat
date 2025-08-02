@@ -3,9 +3,9 @@ import time
 import copy
 from typing import Dict, List, Tuple
 
-from ..config import Config
-from ..locker import Locker
-from file_manager import FileManager
+from config import Config
+from locker import Locker
+from .file_manager import FileManager
 
 
 class StorageManager:
