@@ -2,7 +2,7 @@
   {
     "type": "function",
     "function": {
-      "name": "get_weather",
+      "name": "get_weather123",
       "description": "Get current weather information for a location",
       "parameters": {
         "type": "object",
@@ -24,7 +24,7 @@
   {
     "type": "function",
     "function": {
-        "name": "compare",
+        "name": "compare123",
         "description": "Compare two number, which one is bigger",
         "parameters": {
             "type": "object",

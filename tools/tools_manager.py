@@ -18,12 +18,15 @@ class ToolManager:
             tools_description_path: 工具描述JSON文件路径
             config: 配置对象，必须包含tools_implementation_path属性
         """
+        self.config = config
         
         # 加载工具描述
-        self.tools_description = self._load_tools_description(config.tools_description)
+        self.tools_description = self._load_tools_description(r".\tools\default_descriptions.json")
+        self.tools_description.extend(self._load_tools_description(self.config.tools_description_path))
         
         # 加载工具实现
-        self.tool_implementations = self._load_tool_implementations(config.tools_implementation)
+        self.tool_implementations = self._load_tool_implementations(r".\tools\default_implementations.py")
+        self.tool_implementations.update(self._load_tool_implementations(self.config.tools_implementation_path))
     
     def _load_tools_description(self, path: str) -> List[Dict]:
         """
@@ -105,12 +108,7 @@ class ToolManager:
             arguments: 传递给工具的参数
             
         Returns:
-            工具执行结果，格式为:
-            {
-                "name": tool_name,
-                "content": 执行结果,
-                "status": "success" | "error"
-            }
+            工具执行结果
         """
         # 检查工具是否存在
         if tool_name not in self.tool_implementations:

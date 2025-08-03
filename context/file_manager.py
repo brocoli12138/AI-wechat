@@ -22,17 +22,38 @@ class FileManager:
 
     def save_context(self, user_id: str, context: List[Dict]) -> None:
         filepath = self._get_filepath(user_id)
-        temp_path = f"{filepath}.tmp"
         
         with self.file_locker.acquire_user_lock(user_id):
+            # 如果已经存在这个文件，则追加在这个老文件的最后
+            # 如果不存在这个文件，则直接创建这个文件
+            # 创建临时文件路径
+            temp_filepath = filepath + '.tmp'
+            
             try:
-                with open(temp_path, 'w', encoding='utf-8') as f:
+                # 将内容先写入临时文件
+                with open(temp_filepath, 'w', encoding='utf-8') as f:
+                    if os.path.exists(filepath):
+                        # 如果原文件存在，先读取原文件内容
+                        with open(filepath, 'r', encoding='utf-8') as original:
+                            original_content = original.read()
+                            if original_content.strip():  # 如果原文件不为空
+                                f.write(original_content)
+                                if not original_content.endswith('\n'):
+                                    f.write('\n')
+                    
+                    # 写入新的内容
                     json.dump(context, f, ensure_ascii=False, indent=2)
-                shutil.move(temp_path, filepath)
+                
+                # 使用原子性的重命名操作替换原文件
+                os.replace(temp_filepath, filepath)
+                
             except Exception as e:
-                if os.path.exists(temp_path):
-                    os.remove(temp_path)
-                raise
+                # 如果发生错误，清理临时文件
+                if os.path.exists(temp_filepath):
+                    os.remove(temp_filepath)
+                # 重新抛出异常，确保调用者知道发生了错误
+                raise e
+
 
     def load_context(self, user_id: str) -> List[Dict]:
         filepath = self._get_filepath(user_id)

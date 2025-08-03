@@ -1,0 +1,31 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "list_files_in_directory",
+      "description": "List all files you can send to user, return a list of file names, and maybe a file description. Then you can choose which file to send.",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+        "name": "send_a_file",
+        "description": "Send a file to user. You must get file name from list_files_in_directory function first.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "file_name": {
+                    "type": "string",
+                    "description": "File name, you must get file name from list_files_in_directory function."
+                }
+            },
+            "required": ["file_name"]
+        }
+    }
+}
+]

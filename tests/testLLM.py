@@ -4,5 +4,5 @@ from config import Config
 config = Config()
 responsor=Responsor(config)
 
-res = responsor.send_request({"role":"user","content":"比较一下9.11和9.9的大小以及-3和-5的大小。"})
+res = responsor.send_request("123",{"role":"user","content":"你的文件系统里有没有影片列表？发送给我看一下。"})
 print(res)

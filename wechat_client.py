@@ -4,9 +4,11 @@ from wxauto.msgs import BaseMessage
 from wxauto import WxParam
 from typing import Any, Dict, Callable
 
+wechatobj = WeChat()
+
 class WechatClient:
     def __init__(self, config: Config, handler: Callable[Dict[str, Any], None]):
-        self.wechat = WeChat()
+        self.wechat = wechatobj
         self.config = config
         self.chatWindowList: Dict[str,Chat] = {}
         self.handler = handler
