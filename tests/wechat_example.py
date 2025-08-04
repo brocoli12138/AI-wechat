@@ -15,4 +15,4 @@ chat.SendMsg("Hello")
 
 wechat.KeepRunning()
 
-# wechat.RemoveListenChat("文件传输助手")
+# wechat.RemoveListenChat("friend1")

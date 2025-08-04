@@ -25,7 +25,7 @@ class TestContextManager(unittest.TestCase):
 
     def test_context_trimming(self):
         manager = ContextManager(self.config)
-        # 添加30条消息（15轮完整对话）
+        # append 30 messages (15 complete rounds conversation)
         for i in range(16):
             manager.append('user1', {'role': 'user', 'content': f'Q{i}'})
             manager.append('user1', {'role': 'assistant', 'content': f'A{i}'})

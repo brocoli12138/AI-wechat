@@ -165,7 +165,7 @@ AI-wechat/
         "required": []
       }
     }
-  }
+   }
    ```
 
 2. Implement the tool in `tools_implementations.py`:

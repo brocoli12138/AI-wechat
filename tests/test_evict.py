@@ -7,9 +7,9 @@ def test_eviction():
     manager.append('user3', {'role': 'user', 'content': 'Keep'})
         
     time.sleep(0.2)
-    print(f"当前缓存状态: {manager.storage._cache}")
+    print(f"latest cache: {manager.storage._cache}")
         
     time.sleep(10)
-    print(f"当前缓存状态: {manager.storage._cache}")
+    print(f"latest cache: {manager.storage._cache}")
 
 test_eviction()
