@@ -171,8 +171,12 @@ AI-wechat/
 2. Implement the tool in `tools_implementations.py`:
    ```python
    def tool_name(param1: Any, user_id: str):
-       # YOU MUST ADD AN EXTRA PARAM HERE: user_id, a string, which is used to identify which friend the tool is working for. You can also use this user_id parameter in your implementation!
-       # Implementation here
+       """
+         YOU MUST ADD AN EXTRA PARAM HERE: user_id, a string, 
+         which is used to identify which friend the tool is working for. 
+         You can also use this user_id parameter in your implementation!
+       """ 
+       # Implementation here！
        return result
    ```
 
