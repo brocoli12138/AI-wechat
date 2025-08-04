@@ -127,12 +127,13 @@ AI-wechat/
 | TOOLS_DESCRIPTION_PATH | Path to tools description file | ./tools_descriptions.json |
 | TOOLS_IMPLEMENTATION_PATH | Path to tools implementation file | ./tools_implementations.py |
 | CONTEXT_WINDOW_LENGTH | Number of messages to keep in context | 10 |
-| CONTEXT_STAY_DURATION | Duration to keep context in memory (seconds) | - |
+| CONTEXT_STAY_DURATION | Duration to keep context in memory (seconds) | 30 |
 | CONTEXT_STORAGE_DIR | Directory to store chat history | ./chat_history |
-| DEBOUNCE_THRESHOLD | Time threshold for message debouncing (seconds) | 10 |
-| MAX_WAIT_DURAION | Maximum wait duration for messages (seconds) | 10 |
-| FILE_DOWNLOAD_DIR | Directory to download received files | - |
+| DEBOUNCE_THRESHOLD | Message number threshold for message debouncing | 10 |
+| MAX_WAIT_DURAION | Maximum wait duration for debouncing (seconds) | 5 |
+| FILE_DOWNLOAD_DIR | Directory to download received files | ./downloads |
 | INFO_FILES_DIRECTORY | Information files LLM can send to friends | ./files |
+| LISTEN_FRIENDNAME_FILE | Path to file listing friends to listen to | ./listen_friendname.txt |
 
 ## How It Works
 
