@@ -24,33 +24,33 @@ class FileManager:
         filepath = self._get_filepath(user_id)
         
         with self.file_locker.acquire_user_lock(user_id):
-            # 如果已经存在这个文件，则追加在这个老文件的最后
-            # 如果不存在这个文件，则直接创建这个文件
-            # 创建临时文件路径
+            # If the file already exists, append to the end of the old file
+            # If the file does not exist, create it directly
+            # Create temporary file path
             temp_filepath = filepath + '.tmp'
             
             try:
-                # 将内容先写入临时文件
+                # Write the content to a temporary file first
                 with open(temp_filepath, 'w', encoding='utf-8') as f:
                     if os.path.exists(filepath):
-                        # 如果原文件存在，先读取原文件内容
+                        # If the original file exists, first read the content of the original file
                         with open(filepath, 'r', encoding='utf-8') as original:
                             original_content = json.load(filepath)
                             if len(original_content) != 0:  
-                                # 如果原文件不为空，则把新上下文拼接在旧上下文后面
+                                # If the original file is not empty, append the new context to the old context
                                 original_content.extend(context)
                     
-                    # 写入新的内容
+                    # Write new content
                     json.dump(original_content, f, ensure_ascii=False, indent=2)
                 
-                # 使用原子性的重命名操作替换原文件
+                # Replace the original file using an atomic rename operation
                 os.replace(temp_filepath, filepath)
                 
             except Exception as e:
-                # 如果发生错误，清理临时文件
+                # If an error occurs, clean up temporary files
                 if os.path.exists(temp_filepath):
                     os.remove(temp_filepath)
-                # 重新抛出异常，确保调用者知道发生了错误
+                # Re-throw the exception to ensure the caller knows an error has occurred
                 raise e
 
 
@@ -63,7 +63,7 @@ class FileManager:
             try:
                 with open(filepath, 'r', encoding='utf-8') as f:
                     data = json.load(f)
-                    # 如果消息记录超过50条，只保留最后50条
+                    # If the message history exceeds 50, keep only the last 50
                     if isinstance(data, list) and len(data) > 50:
                         data = data[-50:]
                 if not isinstance(data, list) or not all(isinstance(msg, dict) and 'role' in msg and 'content' in msg for msg in data):

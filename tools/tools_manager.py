@@ -6,37 +6,37 @@ from config import Config
 
 class ToolManager:
     """
-    LLM工具管理类，实现OpenAI风格的工具管理接口
-    支持从JSON文件加载工具描述，并执行对应的工具实现
+    LLM tool management class, implementing an OpenAI-style tool management interface
+    Supports loading tool descriptions from JSON files and executing corresponding tool implementations
     """
     
     def __init__(self, config: Config):
         """
-        初始化工具管理器
+        Initialize the tool manager
         
         Args:
-            tools_description_path: 工具描述JSON文件路径
-            config: 配置对象，必须包含tools_implementation_path属性
+            tools_description_path: Path to the tool description JSON file
+            config: Configuration object, must contain the tools_implementation_path attribute
         """
         self.config = config
         
-        # 加载工具描述
+        # Loading Tool Description
         self.tools_description = self._load_tools_description(r".\tools\default_descriptions.json")
         self.tools_description.extend(self._load_tools_description(self.config.tools_description_path))
         
-        # 加载工具实现
+        # Loading tool implementation
         self.tool_implementations = self._load_tool_implementations(r".\tools\default_implementations.py")
         self.tool_implementations.update(self._load_tool_implementations(self.config.tools_implementation_path))
     
     def _load_tools_description(self, path: str) -> List[Dict]:
         """
-        加载工具描述JSON文件
+        Load tool description JSON file
         
         Args:
-            path: JSON文件路径
+            path: JSON file path
             
         Returns:
-            工具描述列表
+            List of tool descriptions
         """
         if not os.path.exists(path):
             raise FileNotFoundError(f"Tools description file not found: {path}")
@@ -45,7 +45,7 @@ class ToolManager:
             with open(path, 'r', encoding='utf-8') as f:
                 tools_data = json.load(f)
             
-            # 确保工具描述是符合OpenAI格式的列表
+            # Ensure the tool description is in OpenAI-compliant list format
             if isinstance(tools_data, dict) and "tools" in tools_data:
                 tools_data = tools_data["tools"]
             
@@ -58,29 +58,29 @@ class ToolManager:
     
     def _load_tool_implementations(self, module_path: str) -> Dict[str, Callable]:
         """
-        加载工具实现模块
+        Tool Implementation Module Loader
         
         Args:
-            module_path: Python模块文件路径
+            module_path: Path to the Python module file
             
         Returns:
-            工具名称到实现函数的映射字典
+            A dictionary mapping tool names to their implementation functions
         """
         if not os.path.exists(module_path):
             raise FileNotFoundError(f"Tools implementation file not found: {module_path}")
         
-        # 从路径生成模块名称
+        # Generate module name from path
         module_name = f"tools_implementation_{hash(module_path)}"
         
-        # 动态加载模块
+        # Dynamic Module Loading
         spec = importlib.util.spec_from_file_location(module_name, module_path)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         
-        # 提取所有可调用的工具实现函数
+        # Extract all callable tool implementation functions
         implementations = {}
         for name in dir(module):
-            # 跳过内置属性和私有方法
+            # Skip built-in attributes and private methods
             if name.startswith('_'):
                 continue
             
@@ -92,25 +92,25 @@ class ToolManager:
     
     def get_tools(self) -> List[Dict]:
         """
-        获取工具列表（OpenAI风格的工具描述）
+        Get tool list (OpenAI-style tool descriptions)
         
         Returns:
-            工具描述列表
+            List of tool descriptions
         """
         return self.tools_description
     
     def execute_tool(self, tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """
-        执行指定的工具
+        Execute the specified tool
         
         Args:
-            tool_name: 工具名称
-            arguments: 传递给工具的参数
+            tool_name: Tool name
+            arguments: Parameters passed to the tool
             
         Returns:
-            工具执行结果
+            Tool execution result
         """
-        # 检查工具是否存在
+        # Check if the tool exists
         if tool_name not in self.tool_implementations:
             return {
                 "name": tool_name,
@@ -119,11 +119,11 @@ class ToolManager:
             }
         
         try:
-            # 执行工具
+            # Execution Tool
             tool_func = self.tool_implementations[tool_name]
             result = tool_func(**arguments)
             
-            # 处理可能的异步函数
+            # Handling possible asynchronous functions
             if hasattr(result, '__await__'):
                 import asyncio
                 result = asyncio.get_event_loop().run_until_complete(result)

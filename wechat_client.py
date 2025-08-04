@@ -6,7 +6,7 @@ from typing import Any, Dict, Callable
 
 
 class WechatClient:
-    ''' 一个线程不安全不安全不安全的微信客户端类 '''
+    ''' A thread-unsafe unsafe unsafe WeChat client class '''
     wechat = WeChat()
     chatWindowList: Dict[str,Chat] = {}
     def __init__(self, config: Config, handler: Callable[[Dict[str, Any]], None]):
@@ -73,7 +73,7 @@ class WechatClient:
 
     def startListen(self, friendName: str) -> bool:
         if friendName in WechatClient.chatWindowList:
-            print('好友已经存在')
+            print('Friend Exists!')
             return False
         else:
             chat = WechatClient.wechat.AddListenChat(friendName, self._on_message_)
@@ -89,7 +89,7 @@ class WechatClient:
             del WechatClient.chatWindowList[friendName]
             return True
         else:
-            print('好友不存在')
+            print("Friend doesn't exist")
             return False
     
     @classmethod
@@ -98,7 +98,7 @@ class WechatClient:
             WechatClient.chatWindowList[friendName].SendMsg(message)
             return True
         else:
-            print('好友不存在')
+            print("Friend doesn't exist")
             return False
     
     @classmethod
@@ -107,5 +107,5 @@ class WechatClient:
             WechatClient.chatWindowList[friendName].SendFiles(filePath)
             return True
         else:
-            print('好友不存在')
+            print("Friend doesn't exist")
             return False

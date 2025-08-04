@@ -10,7 +10,7 @@ from locker import Locker
 class DebouncePool:
     def __init__(self, config: Config, request_callback: Callable[[str,Dict],None]) -> None:
         self.config = config
-        self.locker = Locker() # 作用域就在本地，不能扩展到ContextManager
+        self.locker = Locker() # The scope is local and cannot be extended to ContextManager.
         self.request_callback = request_callback
         self._user_queues: Dict[str, Queue] = {}
         self._user_timers: Dict[str, float] = {}
@@ -27,11 +27,11 @@ class DebouncePool:
             self._user_queues[user_id].put(message)
             self._user_timers[user_id] = time.time()
 
-            # 消息数达到阈值立即触发
+            # Trigger immediately when the message count reaches the threshold
             enable_request = self._user_queues[user_id].qsize() >= self.config.debounce_threshold
 
         if enable_request == True:
-            # 发送请求必须在这里锁外执行，不然会死锁  
+            # Sending requests must be executed outside the lock here, otherwise it will deadlock 
             self._trigger_request(user_id)
 
     def _start_worker(self, user_id: str) -> None:
@@ -43,9 +43,9 @@ class DebouncePool:
 
         def worker():
             while not stop_event.is_set():
-                # 每次苏醒后获取锁并检查是否过期
+                # Acquire the lock and check for expiration after each wake-up
                 with self.locker.acquire_user_lock(user_id):
-                    # 苏醒后如果user_quque已经没有user_id那说明已经触发过了
+                    # After waking up, if the user_queue no longer has a user_id, it means it has already been triggered.
                     if user_id not in self._user_queues:
                         break
                     elapsed = time.time() - self._user_timers[user_id]
@@ -71,13 +71,13 @@ class DebouncePool:
             while not self._user_queues[user_id].empty():
                 messages.append(self._user_queues[user_id].get())
 
-            # 清理资源
+            # Clean up resources
             del self._user_queues[user_id]
             del self._user_timers[user_id]
             del self._worker_threads[user_id]
             del self._stop_events[user_id]
 
-        # 拼接content，锁外执行提升性能
+        # Concatenate content, execute outside locks to improve performance
         content = ''.join(msg['content'] for msg in messages)
         self.request_callback(user_id, {"role": "user", "content": content})
         

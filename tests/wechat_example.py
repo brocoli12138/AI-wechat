@@ -9,14 +9,10 @@ WxParam.ENABLE_FILE_LOGGER = False
 
 wechat = WeChat()
 
-chat = wechat.AddListenChat("文件传输助手", on_message)
+chat = wechat.AddListenChat("friend1", on_message)
 
-# 发送消息
-chat.SendMsg("你好")
+chat.SendMsg("Hello")
 
-
-# 保持程序运行
 wechat.KeepRunning()
 
-# 移除监听
 # wechat.RemoveListenChat("文件传输助手")

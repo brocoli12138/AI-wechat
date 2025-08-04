@@ -15,13 +15,13 @@ class Responsor:
 
     def _load_system_prompt(self, path: str) -> Dict[str,str]:
         """
-        加载系统提示JSON文件
+        Load system prompt JSON file
         
         Args:
-            path: JSON文件路径
+            path: JSON file path
             
         Returns:
-            系统提示字典
+            System prompt dictionary
         """
         try:
             with open(path, 'r', encoding='utf-8') as file:
@@ -45,29 +45,29 @@ class Responsor:
         return response.choices[0].message
 
     def send_request(self, user_id: str, new_message: Dict | None, history: List[Dict] = []) -> Dict:
-        # 将历史和新消息拼接赋值给temp_context
+        # Concatenate historical and new messages and assign them to temp_context
         self.temp_context=history
-        # 如果新消息不是None，说明是第一次调用，就拼接系统提示词之后将新消息添加到上下文
+        # If the new message is not None, it means it's the first call, so concatenate the system prompt and then add the new message to the context
         if new_message != None:
             if user_id in self.system_prompt:
                 self.temp_context.insert(0,{"role": "system", "content": self.system_prompt[user_id]})
             else:
                 self.temp_context.insert(0,{"role": "system", "content": self.system_prompt["default"]})
             self.temp_context.append(new_message)
-        # 发送一次单次请求
+        # Send a single request
         res_message = self._send_single_request()
-        # 检查是否是一般消息，如果是一般消息就返回，如果是工具调用，则逐个拼接响应之后再发送直到返回一般消息
-        # 直到没有tool_calls 如果一开始就是一般消息，则不会进入while循环
+        # Check if it's a general message, return if true; if it's a tool call, concatenate responses one by one and resend until a general message is returned
+        # Continue until there are no tool_calls. If it's a general message initially, the while loop won't be entered
         if res_message.tool_calls != None:
-            # 先将tool_calls响应拼接进上下文，然后逐个执行tools
+            # First concatenate the tool_calls response into the context, then execute the tools one by one
             self.temp_context.append(res_message)
             for item in res_message.tool_calls:
-                # 逐个执行tools，然后拼接
+                # Execute tools one by one, then concatenate
                 toolname=item.function.name
                 toolargument=json.loads(item.function.arguments.strip())
                 toolargument.update({"user_id": user_id})
                 tool_res = self.tool_manager.execute_tool(toolname, toolargument)
                 self.temp_context.append({"role": "tool", "content": tool_res,"tool_call_id": item.id})
-            # 递归调用send_request，防止在提交tools工具之后LLM还需要调用工具。
+            # Recursively call send_request to prevent the LLM from needing to call tools again after submitting the tools.
             return self.send_request(user_id, None, self.temp_context)
         return {"role":res_message.role, "content":res_message.content}

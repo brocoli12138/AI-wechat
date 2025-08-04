@@ -31,40 +31,21 @@ class TestContextManager(unittest.TestCase):
             manager.append('user1', {'role': 'assistant', 'content': f'A{i}'})
         
         context = manager.get('user1')
-        self.assertEqual(int(self.config.CONTEXT_WINDOW_LENGTH), 10)  # 验证配置项
-        self.assertEqual(len(context), 10)  # 验证上下文长度
+        self.assertEqual(int(self.config.CONTEXT_WINDOW_LENGTH), 10) 
+        self.assertEqual(len(context), 10) 
         #self.assertEqual(context[0]['content'], 'A8')
 
     def test_disk_persistence(self):
         manager = ContextManager(self.config)
-        # 模拟没有加载上下文
+        # Simulating no context loaded
         context = manager.get('user2')
         self.assertEqual(len(context), 0)
-        # 模拟添加上下文
+        # Simulating adding context
         manager.append('user2', {'role': 'user', 'content': 'Test'})
         context = manager.get('user2')
         self.assertEqual(len(context), 1)
-        # 模拟保存上下文
+        # Simulating saving context
         # manager.savefile('user2')
-
-
-"""     @patch('time.time', return_value=1000)
-    def test_eviction(self, mock_time):
-        manager = ContextManager(self.config)
-        manager.append('user3', {'role': 'user', 'content': 'Keep'})
-        
-        # 模拟时间流逝超过保留期限
-        mock_time.return_value = 1000 + 65  # 65秒 > 60秒
-        time.sleep(0.2)  # 等待驱逐线程
-        print(f"当前缓存状态: {manager.storage._cache}")
-        
-        # 验证内存已清除
-        with self.assertRaises(KeyError):
-            manager.storage._cache['user3']
-            # 打印当前缓存状态
-        
-        # 验证磁盘存在
-        self.assertTrue(manager.file_manager._get_filepath('user3')) """
 
 if __name__ == '__main__':
     unittest.main()

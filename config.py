@@ -9,32 +9,32 @@ class Config:
         Args:
             path (str): Path to .env configuration file. Defaults to '.env'.
         """
-        # 如果没有传路径，默认使用与 config.py 同级的 .env
+        # If no path is passed, the .env file at the same level as config.py is used by default
         if path is None:
-            # 获取当前文件（config.py）所在的目录
+            # Get the directory where the current file (config.py) is located
             current_dir = os.path.dirname(os.path.abspath(__file__))
             path = os.path.join(current_dir, '.env')
         
-        # 检查配置文件是否存在
+        # Check if the configuration file exists
         if not os.path.isfile(path):
-            raise FileNotFoundError(f"配置文件 {path} 不存在")
+            raise FileNotFoundError(f"The configuration file {path} does not exist.")
         self._settings = dotenv_values(path)
-        # 检查配置项是否为空
+        # Check if configuration items are empty
         if not self._settings:
-            raise ValueError("配置文件为空或未包含任何有效配置项")
+            raise ValueError("The configuration file is empty or does not contain any valid configuration items.")
 
-        # 将所有配置键转换为小写，以实现大小写不敏感的访问
+        # Convert all configuration keys to lowercase for case-insensitive access
         self._settings = {k.lower(): v for k, v in self._settings.items()}
 
     def __getattr__(self, name):
         """Enable attribute-style access to configuration values (e.g., config.color)"""
-        # 将属性名转换为小写以匹配配置键
+        # Convert attribute names to lowercase to match configuration keys
         name = name.lower()
         if name in self._settings:
             return self._settings[name]
-        # 如果配置项不存在，抛出AttributeError异常
-        raise AttributeError(f"配置项 '{name}' 不存在")
+        # If the configuration item does not exist, raise an AttributeError exception
+        raise AttributeError(f"Configuration item '{name}' does not exist")
 
     def __dir__(self):
-        """返回所有可用的配置项名称"""
+        """Return all available configuration item names"""
         return list(self._settings.keys())

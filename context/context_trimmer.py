@@ -14,7 +14,7 @@ class ContextTrimmer:
         if len(full_history) <= self.window_size:
             return copy.deepcopy(full_history)
         
-        # 从最新消息开始截取
+        # trim from the latest news
         trimmed = full_history[-self.window_size:]
         
         return trimmed

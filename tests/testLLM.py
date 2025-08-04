@@ -4,5 +4,5 @@ from config import Config
 config = Config()
 responsor=Responsor(config)
 
-res = responsor.send_request("123",{"role":"user","content":"你的文件系统里有没有影片列表？发送给我看一下。"})
+res = responsor.send_request("123",{"role":"user","content":"Do you have a list of movies in your file system? Send it to me for a look."})
 print(res)
