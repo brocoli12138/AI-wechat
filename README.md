@@ -60,9 +60,10 @@ An intelligent WeChat bot powered by large language models (LLM) that can automa
      
      # File download directory
      FILE_DOWNLOAD_DIR = ./files
-
      # Information files LLM can send to friends
      INFO_FILES_DIRECTORY = ./files
+     # Path to file listing friends to listen to
+     LISTEN_FRIENDNAME_FILE = ./listen_friendname.txt
      ```
 
 4. Configure friends to listen to:
