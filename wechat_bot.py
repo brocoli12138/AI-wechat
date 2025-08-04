@@ -1,3 +1,4 @@
+from multiprocessing import context
 from config import Config
 from wechat_client import WechatClient
 from LLM.responsor import Responsor
@@ -15,18 +16,18 @@ class WechatBot:
         self.responsor = Responsor(self.config)
         self.context_manager = ContextManager(self.config)
         self.debounce_pool = DebouncePool(self.config, self._debounce_handler)
-        self.friendname_list = []
+        self.friendname_list = self._load_listen_friendname_list(self.config.listen_friendname_file)
         self.stop_flag = 0
         self.stop_flag_lock = threading.Lock()
         self.loop_thread: threading.Thread = None
-
+    
     def _message_handler(self, message: Dict[str, Any]) -> None:
         """{
                 "user_id": user_id,
                 "message": {"role":"user","content":msg}
             }"""
         # First submit the message to the debounce pool upon receiving it
-        self.debounce_pool.submit_message(message.user_id, message.message)        
+        self.debounce_pool.submit_message(message["user_id"], message["message"])        
     
     def _debounce_handler(self, user_id: str, message: Dict):
         # Retrieve historical messages from the context manager, then send them along with new messages to the LLM
@@ -35,6 +36,8 @@ class WechatBot:
         # After receiving the LLM response, first add the user's message to the context manager, then add the response to the context manager
         self.context_manager.append(user_id, message)
         self.context_manager.append(user_id, response)
+        # send response to user
+        WechatClient.sendTextMessage(user_id, response["content"])
 
     def _event_loop(self):
         while True:
@@ -46,7 +49,7 @@ class WechatBot:
     def _load_listen_friendname_list(self, filename: str):
         with open(filename, 'r', encoding='utf-8') as file:
             lines = [line.strip() for line in file]
-        self.friendname_list = lines
+        return lines
 
     def start_event_loop(self):
         # First, perform logical configuration
@@ -59,7 +62,7 @@ class WechatBot:
                 print(f"Listen {name} failed!")
         # Then start an event loop
         self.loop_thread = threading.Thread(target=self._event_loop, daemon=False)
-        pass
+        self.loop_thread.start()
 
     def stop_event_loop(self):
         with self.stop_flag_lock:
@@ -68,3 +71,9 @@ class WechatBot:
 
 if __name__ == "__main__":
     bot = WechatBot()
+    bot.start_event_loop()
+    try:
+        while True:
+            time.sleep(10)
+    except KeyboardInterrupt:
+        bot.stop_event_loop()

@@ -34,14 +34,16 @@ class FileManager:
                 with open(temp_filepath, 'w', encoding='utf-8') as f:
                     if os.path.exists(filepath):
                         # If the original file exists, first read the content of the original file
-                        with open(filepath, 'r', encoding='utf-8') as original:
-                            original_content = json.load(filepath)
-                            if len(original_content) != 0:  
+                        with open(filepath, 'r', encoding='utf-8') as original_file:
+                            original_context = json.load(original_file)
+                            if len(original_context) != 0:  
                                 # If the original file is not empty, append the new context to the old context
-                                original_content.extend(context)
-                    
-                    # Write new content
-                    json.dump(original_content, f, ensure_ascii=False, indent=2)
+                                original_context.extend(context)
+                            # Write the new content to the temporary file
+                        json.dump(original_context, f, ensure_ascii=False, indent=2)
+                    else:
+                        # Write new content
+                        json.dump(context, f, ensure_ascii=False, indent=2)
                 
                 # Replace the original file using an atomic rename operation
                 os.replace(temp_filepath, filepath)

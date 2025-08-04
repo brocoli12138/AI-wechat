@@ -1,3 +1,4 @@
+from multiprocessing import set_forkserver_preload
 import threading
 import time
 from queue import Queue
@@ -8,13 +9,14 @@ from locker import Locker
 
 
 class DebouncePool:
-    def __init__(self, config: Config, request_callback: Callable[[str,Dict],None]) -> None:
+    def __init__(self, config: Config, callback: Callable[[str,Dict],None]) -> None:
         self.config = config
         self.locker = Locker() # The scope is local and cannot be extended to ContextManager.
-        self.request_callback = request_callback
+        self.callback = callback
         self._user_queues: Dict[str, Queue] = {}
         self._user_timers: Dict[str, float] = {}
         self._worker_threads: Dict[str, threading.Thread] = {}
+        self._worker_threads_lock = threading.Lock()
         self._stop_events: Dict[str, threading.Event] = {}
 
     def submit_message(self, user_id: str, message: Dict) -> None:
@@ -32,11 +34,12 @@ class DebouncePool:
 
         if enable_request == True:
             # Sending requests must be executed outside the lock here, otherwise it will deadlock 
-            self._trigger_request(user_id)
+            self._trigger(user_id)
 
     def _start_worker(self, user_id: str) -> None:
-        if user_id in self._worker_threads:
-            return
+        with self._worker_threads_lock:
+            if user_id in self._worker_threads:
+                return
 
         stop_event = threading.Event()
         self._stop_events[user_id] = stop_event
@@ -49,20 +52,20 @@ class DebouncePool:
                     if user_id not in self._user_queues:
                         break
                     elapsed = time.time() - self._user_timers[user_id]
-                remaining = max(0, self.config.max_wait_duration - elapsed)
+                remaining = max(0, int(self.config.max_wait_duration) - elapsed)
                     
                 if remaining > 0:
                     time.sleep(1)
                     continue
 
-                self._trigger_request(user_id)
+                self._trigger(user_id)
                 break
 
         thread = threading.Thread(target=worker, daemon=True)
         self._worker_threads[user_id] = thread
         thread.start()
 
-    def _trigger_request(self, user_id: str):
+    def _trigger(self, user_id: str):
         with self.locker.acquire_user_lock(user_id):
             if user_id not in self._user_queues:
                 return
@@ -79,5 +82,5 @@ class DebouncePool:
 
         # Concatenate content, execute outside locks to improve performance
         content = ''.join(msg['content'] for msg in messages)
-        self.request_callback(user_id, {"role": "user", "content": content})
+        self.callback(user_id, {"role": "user", "content": content})
         
