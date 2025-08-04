@@ -25,7 +25,10 @@ class Responsor:
         """
         try:
             with open(path, 'r', encoding='utf-8') as file:
-                return json.load(file)
+                system_prompt = json.load(file)
+                if "default" not in system_prompt:
+                    system_prompt["default"] = "You are an helpful assistant."
+                return system_prompt
         except:
             return {"default": "You are an helpful assistant."}
 

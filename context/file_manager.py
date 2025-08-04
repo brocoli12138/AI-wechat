@@ -35,14 +35,13 @@ class FileManager:
                     if os.path.exists(filepath):
                         # 如果原文件存在，先读取原文件内容
                         with open(filepath, 'r', encoding='utf-8') as original:
-                            original_content = original.read()
-                            if original_content.strip():  # 如果原文件不为空
-                                f.write(original_content)
-                                if not original_content.endswith('\n'):
-                                    f.write('\n')
+                            original_content = json.load(filepath)
+                            if len(original_content) != 0:  
+                                # 如果原文件不为空，则把新上下文拼接在旧上下文后面
+                                original_content.extend(context)
                     
                     # 写入新的内容
-                    json.dump(context, f, ensure_ascii=False, indent=2)
+                    json.dump(original_content, f, ensure_ascii=False, indent=2)
                 
                 # 使用原子性的重命名操作替换原文件
                 os.replace(temp_filepath, filepath)
