@@ -2,44 +2,22 @@
   {
     "type": "function",
     "function": {
-      "name": "get_weather123",
-      "description": "Get current weather information for a location",
+      "name": "add",
+      "description": "Calculate the sum of two numbers.",
       "parameters": {
         "type": "object",
         "properties": {
-          "location": {
-            "type": "string",
-            "description": "City and country e.g. London, UK"
+          "a": {
+            "type": "int",
+            "description": "the first number to add"
           },
-          "unit": {
-            "type": "string",
-            "enum": ["celsius", "fahrenheit"],
-            "description": "Temperature unit"
+          "b": {
+            "type": "int",
+            "description": "the second number to add"
           }
         },
-        "required": ["location"]
+        "required": []
       }
     }
-  },
-  {
-    "type": "function",
-    "function": {
-        "name": "compare123",
-        "description": "Compare two number, which one is bigger",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "a": {
-                    "type": "float",
-                    "description": "A number"
-                },
-                "b": {
-                    "type": "float",
-                    "description": "A number"
-                }
-            },
-            "required": ["a", "b"]
-        }
-    }
-}
+  }
 ]
