@@ -1,2 +1,4 @@
 .env
 .listen_friendname.txt
+wxauto_logs/
+/__pycache__/
