@@ -188,7 +188,7 @@ Contributions are welcome! Please feel free to submit a Pull Request. If you hav
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apcache-2.0 License - see the [LICENSE](LICENSE) file for details.
 
 ## Disclaimer
 
