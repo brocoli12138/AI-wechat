@@ -1,6 +1,6 @@
 from config import Config
 import os
-# from wechat_client import WechatClient
+from wechat_client import WechatClient
 
 
 def list_files_in_directory(user_id: str) -> str:
@@ -26,8 +26,8 @@ def send_a_file(file_name: str, user_id:str) -> str:
     if not os.path.exists(file_path):
         return f"File {file_name} not found"
     # Send File
-    """ if WechatClient.sendFileMessage(self, user_id, file_path):
-            return f"File {file_name} sent successfully!"
-        else:
-            return f"File {file_name} sent failed!" """
-    return f"File {file_name} sent successfully"
+    if WechatClient.sendFileMessage(user_id, file_path):
+        return f"File {file_name} sent successfully!"
+    else:
+        return f"File {file_name} sent failed!" 
+    # return f"File {file_name} sent successfully"

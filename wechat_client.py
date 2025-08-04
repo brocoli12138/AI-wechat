@@ -1,7 +1,6 @@
 from config import Config
 from wxauto import WeChat, Chat
 from wxauto.msgs import BaseMessage
-from wxauto import WxParam
 from typing import Any, Dict, Callable
 
 
@@ -20,7 +19,7 @@ class WechatClient:
             message_switcher = {
                 "text": lambda: message.content,
                 "voice": lambda: message.to_text(),
-                "emotion": lambda: "Here is an emotion message to describe my emotion. You cannot understand it.",
+                "emotion": lambda: "Here is an emotion message to describe my emotion.",
                 "image": lambda: f"Here is an image message. You can see it if you have a image viewer. The image is at {message.download(self.config.file_download_dir)}.",
                 "video": lambda: f"Here is a video message. You can see it if you have a video viewer. The video is at {message.download(self.config.file_download_dir)}.",
                 "file": lambda: f"Here is a file message. You can see it if you have a file viewer. The file is at {message.download(self.config.file_download_dir)}."
@@ -29,7 +28,7 @@ class WechatClient:
             # 获取消息内容，如果消息类型不在handlers中则返回默认消息
             msg = message_switcher.get(
                 message.type,
-                lambda: "Here is a complex message. You cannot understand it."
+                lambda: "[Between this square brackets is a invisiable non-text message. Please ignore it.]"
             )()
 
             # 调用处理函数

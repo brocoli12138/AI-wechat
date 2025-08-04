@@ -9,9 +9,10 @@ WxParam.ENABLE_FILE_LOGGER = False
 
 wechat = WeChat()
 
-chat = wechat.AddListenChat("friend1", on_message)
+chat = wechat.AddListenChat("文件传输助手", on_message)
 
-chat.SendMsg("Hello")
+# chat.SendMsg("Hello")
+chat.SendFiles(r"D:\Desktop\AI-wechat\files\videoslist.txt")
 
 wechat.KeepRunning()
 
