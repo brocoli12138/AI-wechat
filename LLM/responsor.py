@@ -33,7 +33,7 @@ class Responsor:
             return {"default": "You are an helpful assistant."}
 
     def _send_single_request(self):
-        print(self.temp_context)
+        # print(self.temp_context)
         response = self.openai_client.chat.completions.create(
                 model=self.config.model_name,
                 messages=self.temp_context,

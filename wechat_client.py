@@ -39,7 +39,7 @@ class WechatClient:
 
     def startListen(self, friendName: str) -> bool:
         if friendName in WechatClient.chatWindowList:
-            print('Friend Exists!')
+            print(f'Friend {friendName} is already in listen!')
             return False
         else:
             chat = WechatClient.wechat.AddListenChat(friendName, self._on_message_)
@@ -55,7 +55,7 @@ class WechatClient:
             del WechatClient.chatWindowList[friendName]
             return True
         else:
-            print("Friend doesn't exist")
+            print(f"Friend {friendName} is not in listen list!")
             return False
     
     @classmethod
@@ -64,7 +64,7 @@ class WechatClient:
             WechatClient.chatWindowList[friendName].SendMsg(message)
             return True
         else:
-            print("Friend doesn't exist")
+            print(f"Friend {friendName} is not in listen list!")
             return False
     
     @classmethod
@@ -73,5 +73,5 @@ class WechatClient:
             WechatClient.chatWindowList[friendName].SendFiles(filePath)
             return True
         else:
-            print("Friend doesn't exist")
+            print(f"Friend {friendName} is not in listen list!")
             return False

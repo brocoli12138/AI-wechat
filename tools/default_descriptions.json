@@ -3,7 +3,7 @@
     "type": "function",
     "function": {
       "name": "list_files_in_directory",
-      "description": "List all files you can send to user, return a list of file names, and maybe a file description. Then you can choose which file to send.",
+      "description": "Provide a list of all reference documents that can be sent to the user before responding, when unable to accurately answer a private consultation in the user's specialized subfield.",
       "parameters": {
         "type": "object",
         "properties": {},

@@ -5,24 +5,25 @@ from LLM.responsor import Responsor
 from LLM.debounce_pool import DebouncePool
 from context.context_manager import ContextManager
 
-from typing import Any, Dict
+from typing import Any, Dict, Callable
 import threading
 import time
 
 class WechatBot:
-    def __init__(self):
+    def __init__(self, frontend_handler: Callable[[str, Dict[str, Any]], None] = None):
         self.config = Config()
         self.wechatclient = WechatClient(self.config, self._message_handler)
         self.responsor = Responsor(self.config)
         self.context_manager = ContextManager(self.config)
         self.debounce_pool = DebouncePool(self.config, self._debounce_handler)
+        self.frontend_handler = frontend_handler
         self.friendname_list = self._load_listen_friendname_list(self.config.listen_friendname_file)
         self.stop_flag = 0
         self.stop_flag_lock = threading.Lock()
         self.loop_thread: threading.Thread = None
     
     def _message_handler(self, message: Dict[str, Any]) -> None:
-        """{
+        """message: {
                 "user_id": user_id,
                 "message": {"role":"user","content":msg}
             }"""
@@ -37,7 +38,16 @@ class WechatBot:
         self.context_manager.append(user_id, message)
         self.context_manager.append(user_id, response)
         # send response to user
-        WechatClient.sendTextMessage(user_id, response["content"])
+        status = WechatClient.sendTextMessage(user_id, response["content"])
+        # send response to frontend if frontend_handler is not None
+        if self.frontend_handler != None:
+            """frontend_handler(userid, Dict_message)
+            Dict_message: {"role": "user", "content": msg}"""
+            if status == True:
+                self.frontend_handler(user_id, message)
+                self.frontend_handler(user_id, response)
+            else:
+                self.frontend_handler(user_id, {"role": "bot", "content": "message send failed"})
 
     def _event_loop(self):
         while True:
@@ -67,6 +77,13 @@ class WechatBot:
     def stop_event_loop(self):
         with self.stop_flag_lock:
                 self.stop_flag = 1
+        for name in self.friendname_list:
+            res = self.wechatclient.stopListen(name)
+            if res:
+                print(f"Stop listen {name} succeed!")
+            else:
+                print(f"Stop listen {name} failed!")
+        # Then join the event loop thread
         self.loop_thread.join()
 
 if __name__ == "__main__":
