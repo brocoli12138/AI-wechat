@@ -2,6 +2,7 @@ import os
 import json
 import base64
 import shutil
+import datetime
 from typing import List, Dict
 from config import Config
 from locker import Locker
@@ -36,14 +37,12 @@ class FileManager:
                         # If the original file exists, first read the content of the original file
                         with open(filepath, 'r', encoding='utf-8') as original_file:
                             original_context = json.load(original_file)
-                            if len(original_context) != 0:  
-                                # If the original file is not empty, append the new context to the old context
-                                original_context.extend(context)
-                            # Write the new content to the temporary file
-                        json.dump(original_context, f, ensure_ascii=False, indent=2)
-                    else:
-                        # Write new content
-                        json.dump(context, f, ensure_ascii=False, indent=2)
+                        if len(original_context) != 0:  
+                            # If the original file is not empty, rename the old context
+                            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                            os.replace(filepath, filepath + "." + timestamp + ".bak")
+                    # Write new content
+                    json.dump(context, f, ensure_ascii=False, indent=2)
                 
                 # Replace the original file using an atomic rename operation
                 os.replace(temp_filepath, filepath)

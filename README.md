@@ -8,6 +8,7 @@ An intelligent WeChat bot powered by large language models (LLM) that can automa
 - **Message Handling**: Processes various message types including text, voice, images, videos, and files
 - **Context Management**: Maintains conversation history for more coherent interactions
 - **Debounce Mechanism**: Prevents message flooding by implementing a debounce pool
+- **Memory Saving**: Improve performance by moving chat logs into hard drive 
 - **Multi-Friend Support**: Listens to and responds to multiple friends simultaneously
 - **Extensible Tools**: Supports custom tools that can be invoked by the LLM
 
@@ -16,6 +17,7 @@ An intelligent WeChat bot powered by large language models (LLM) that can automa
 - Python 3.8 or higher
 - WeChat desktop application <= 3.9 (required for `wxauto` library)
 - OpenAI-compatible API key and endpoint
+- Windows support only
 
 ## Installation
 
@@ -27,7 +29,7 @@ An intelligent WeChat bot powered by large language models (LLM) that can automa
 
 2. Install the required dependencies:
    ```bash
-   pip install -r requirement.txt
+   pip install -r requirements.txt
    ```
 
 3. Configure the environment:
@@ -188,7 +190,7 @@ Contributions are welcome! Please feel free to submit a Pull Request. If you hav
 
 ## License
 
-This project is licensed under the Apcache-2.0 License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache-2.0 License - see the [LICENSE](LICENSE) file for details.
 
 ## Disclaimer
 
@@ -278,7 +280,7 @@ The AI-wechat Development Team, including its members, contributors, and sponsor
 #### **V. Intellectual Property and Usage Guidelines**
 1. **Ownership and Rights**
    - All source code, documentation, trademarks, and associated materials related to AI-WeChat are the sole property of the development team and protected under the *Copyright Law of the People's Republic of China*.
-   - Users may use and modify the code in accordance with the terms of the [MIT Open Source License](https://opensource.org/licenses/MIT), provided that they do not claim the project as their own original creation or seek patent protection over derivative works.
+   - Users may use and modify the code in accordance with the terms of the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0), provided that they include appropriate attribution, include a copy of the license, and state any significant changes made to the original work. Redistribution and use in source and binary forms are permitted, subject to the conditions of the Apache License 2.0, and users must not claim the project as their own original creation or assert patent rights in a manner inconsistent with the license terms.
 
 2. **Prohibited Conduct**
    - Users must not:
