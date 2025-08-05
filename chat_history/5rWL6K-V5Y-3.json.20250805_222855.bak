@@ -1,0 +1,26 @@
+[
+  {
+    "role": "user",
+    "content": "[Between this square brackets is a invisiable non-text message. Please ignore it.]Hello"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello! How can I assist you today?"
+  },
+  {
+    "role": "user",
+    "content": "[Between this square brackets is a invisiable non-text message. Please ignore it.]你叫什么名字？"
+  },
+  {
+    "role": "assistant",
+    "content": "我叫通义千问（Qwen）。我是阿里云研发的超大规模语言模型。我可以帮助你回答问题、创作文字、编程等。有什么我可以帮你的吗？"
+  },
+  {
+    "role": "user",
+    "content": "[Between this square brackets is a invisiable non-text message. Please ignore it.]你好你叫什么名字"
+  },
+  {
+    "role": "assistant",
+    "content": "你好！我叫通义千问（Qwen）。我是阿里云研发的超大规模语言模型。有什么问题我可以帮您吗？"
+  }
+]

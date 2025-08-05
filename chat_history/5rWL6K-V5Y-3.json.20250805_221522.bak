@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "[Between this square brackets is a invisiable non-text message. Please ignore it.]Hello"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello! How can I assist you today?"
+  }
+]

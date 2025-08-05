@@ -51,7 +51,7 @@ class WechatClient:
 
     def stopListen(self, friendName: str) -> bool:
         if friendName in WechatClient.chatWindowList:
-            WechatClient.chatWindowList[friendName].RemoveListenChat(friendName)
+            WechatClient.wechat.RemoveListenChat(friendName)
             del WechatClient.chatWindowList[friendName]
             return True
         else:
